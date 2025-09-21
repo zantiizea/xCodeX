@@ -545,18 +545,10 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
 
 def paraphrase_element(element, config: EngineConfig) -> None:
     disallowed_inline = {"a", "em", "i", "strong", "b"}
-    block_tags = {"p", "li", "blockquote", "h1", "h2", "h3", "h4", "h5", "h6"}
 
-    skip_blocks = set()
-    for blk in element.find_all(list(block_tags)):
-        if blk.find(list(disallowed_inline)) is not None:
-            skip_blocks.add(blk)
-
-    def in_skip_block(node) -> bool:
+    def in_disallowed_inline(node) -> bool:
         parent = getattr(node, "parent", None)
         while parent is not None and parent is not element:
-            if parent in skip_blocks:
-                return True
             name = getattr(parent, "name", "") or ""
             if name.lower() in disallowed_inline:
                 return True
@@ -566,7 +558,7 @@ def paraphrase_element(element, config: EngineConfig) -> None:
     text_nodes: List[NavigableString] = []
     for descendant in element.descendants:
         if isinstance(descendant, NavigableString) and descendant.strip():
-            if in_skip_block(descendant):
+            if in_disallowed_inline(descendant):
                 continue
             text_nodes.append(descendant)
 
