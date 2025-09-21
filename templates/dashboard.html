@@ -93,14 +93,14 @@
                             <form action="/admin/api/" method="post">
                                 <div class="api-section">
                                     <h6>
-                                        <span class="status-indicator {{ 'status-ok' if (config.get('hf_remote_url') or remote_default) else 'status-warn' }}"></span>
+                                        <span class="status-indicator {{ 'status-ok' if (config.get('hf_remote_url') is none or config.get('hf_remote_url','').strip()) else 'status-warn' }}"></span>
                                         Remote Paraphrasing Endpoint
                                     </h6>
                                     <div class="row g-3">
                                         <div class="col-md-8">
                                             <label class="form-label">Endpoint URL</label>
-                                            <input type="url" class="form-control" name="hf_remote_url" value="{{ config.get('hf_remote_url') or remote_default }}">
-                                            <div class="form-text">Defaults to {{ remote_default }}</div>
+                                            <input type="url" class="form-control" name="hf_remote_url" value="{{ config.get('hf_remote_url') or '' }}" placeholder="{{ remote_default }}">
+                                            <div class="form-text">Provide the remote paraphrasing endpoint. Leave blank to disable the remote worker. When unset, the default {{ remote_default }} will be used.</div>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Timeout (seconds)</label>
