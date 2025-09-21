@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clone Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f7fb; }
+        h1 { font-weight: 600; }
+        .tab-content { margin-top: 1.5rem; }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        .status-ok { background: #198754; }
+        .status-warn { background: #dc3545; }
+        .api-section {
+            border: 1px solid #dee2e6;
+            border-radius: .75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: #fff;
+        }
+        .api-section h6 { font-weight: 600; }
+        code { font-size: .9rem; }
+        .threshold-group input {
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <h1 class="mb-4">Website Cloning Admin Panel</h1>
+
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab">Site Config</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab">Paraphrasing Engines</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="replacement-tab" data-bs-toggle="tab" data-bs-target="#replacement" type="button" role="tab">Text Replacements</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="adminTabsContent">
+                <div class="tab-pane fade show active" id="config" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header"><h5 class="mb-0">Site Configuration</h5></div>
+                        <div class="card-body">
+                            <form action="/admin/config/" method="post" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Original Domain</label>
+                                    <input type="url" name="original" class="form-control" value="{{ original }}" required>
+                                    <div class="form-text">The source site you proxy (e.g. https://dotesports.com)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Cloned Domain</label>
+                                    <input type="url" name="cloned" class="form-control" value="{{ cloned }}" required>
+                                    <div class="form-text">Your domain that serves the proxied/paraphrased pages</div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="api" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header"><h5 class="mb-0">Paraphrasing Engines</h5></div>
+                        <div class="card-body">
+                            {% if request.query_params.get('purged') %}
+                                <div class="alert alert-success">Purged cache for {{ request.query_params.get('purged') }}</div>
+                            {% elif request.query_params.get('purge_error') %}
+                                <div class="alert alert-danger">Please provide a relative path or full URL to purge.</div>
+                            {% endif %}
+                            {% if not hf_available %}
+                            <div class="alert alert-warning">
+                                <strong>transformers is not installed.</strong> Hugging Face cannot run until you install the Python package.{{ '
+' }}{{ hf_import_error }}
+                            </div>
+                            {% endif %}
+
+                            <form action="/admin/api/" method="post">
+                                <div class="api-section">
+                                    <h6>
+                                        <span class="status-indicator {{ 'status-ok' if (config.get('hf_remote_url') or remote_default) else 'status-warn' }}"></span>
+                                        Remote Paraphrasing Endpoint
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-8">
+                                            <label class="form-label">Endpoint URL</label>
+                                            <input type="url" class="form-control" name="hf_remote_url" value="{{ config.get('hf_remote_url') or remote_default }}">
+                                            <div class="form-text">Defaults to {{ remote_default }}</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Timeout (seconds)</label>
+                                            <input type="number" min="5" class="form-control" name="hf_remote_timeout" value="{{ config.get('hf_remote_timeout','45') }}">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="use_background_paraphrase" id="use_background_paraphrase" {{ 'checked' if config.get('use_background_paraphrase','true') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="use_background_paraphrase">Use background paraphrasing (serve original instantly, regenerate in background)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="api-section">
+                                    <h6>Date Detection</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">CSS Selector(s)</label>
+                                            <input type="text" class="form-control" name="date_selector" value="{{ config.get('date_selector','') }}" placeholder="time.published, .article-date">
+                                            <div class="form-text">Optional: newline separated selectors to locate the published date element.</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Attribute</label>
+                                            <input type="text" class="form-control" name="date_attribute" value="{{ config.get('date_attribute','') }}" placeholder="datetime">
+                                            <div class="form-text">Leave blank to use element text.</div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Paraphrase threshold (YYYY-MM-DD)</label>
+                                            <div class="row g-2 threshold-group">
+                                                <div class="col-md-4">
+                                                    <input type="number" min="1900" class="form-control" name="paraphrase_year_threshold" value="{{ config.get('paraphrase_year_threshold','2025') }}">
+                                                    <div class="form-text text-nowrap">Year (>=)</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="number" min="1" max="12" class="form-control" name="paraphrase_month_threshold" value="{{ config.get('paraphrase_month_threshold','1') }}">
+                                                    <div class="form-text text-nowrap">Month (>=)</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="number" min="1" max="31" class="form-control" name="paraphrase_day_threshold" value="{{ config.get('paraphrase_day_threshold','1') }}">
+                                                    <div class="form-text text-nowrap">Day (>=)</div>
+                                                </div>
+                                            </div>
+                                            {% set threshold_year = (config.get('paraphrase_year_threshold') or '2025') | int %}
+                                            {% set threshold_month = (config.get('paraphrase_month_threshold') or '1') | int %}
+                                            {% set threshold_day = (config.get('paraphrase_day_threshold') or '1') | int %}
+                                            <div class="alert alert-secondary py-2 small mb-0 mt-3">
+                                                Active threshold: {{ threshold_year }}-{{ '%02d' % threshold_month }}-{{ '%02d' % threshold_day }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="api-section">
+                                    <h6>
+                                        <span class="status-indicator {{ 'status-ok' if config.get('use_huggingface','true') in ['true','on'] else 'status-warn' }}"></span>
+                                        Hugging Face (Primary Engine)
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="use_huggingface" id="use_huggingface" {{ 'checked' if config.get('use_huggingface','true') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="use_huggingface">Enable Hugging Face</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9 text-muted">
+                                            Runs locally via the <code>transformers</code> library. Configure a paraphrasing model and optional decoding parameters below.
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Model ID</label>
+                                            <input type="text" class="form-control" name="hf_model_id" value="{{ config.get('hf_model_id','humarin/chatgpt_paraphraser_on_T5_base') }}" required>
+                                            <div class="form-text">Example: humarin/chatgpt_paraphraser_on_T5_base</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Task</label>
+                                            <input type="text" class="form-control" name="hf_task" value="{{ config.get('hf_task','text2text-generation') }}" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Device</label>
+                                            <input type="text" class="form-control" name="hf_device" value="{{ config.get('hf_device','cpu') }}">
+                                            <div class="form-text">cpu, cuda, cuda:0, mps, etc.</div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Max New Tokens</label>
+                                            <input type="number" min="16" max="2048" class="form-control" name="hf_max_new_tokens" value="{{ config.get('hf_max_new_tokens','256') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Chunk Size (chars)</label>
+                                            <input type="number" min="256" class="form-control" name="hf_chunk_size" value="{{ config.get('hf_chunk_size','1200') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Num Beams</label>
+                                            <input type="number" min="1" max="8" class="form-control" name="hf_num_beams" value="{{ config.get('hf_num_beams','4') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Temperature</label>
+                                            <input type="number" step="0.1" min="0.1" class="form-control" name="hf_temperature" value="{{ config.get('hf_temperature','0.7') }}">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check form-switch pt-4">
+                                                <input class="form-check-input" type="checkbox" name="hf_do_sample" id="hf_do_sample" {{ 'checked' if config.get('hf_do_sample','false') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="hf_do_sample">Enable sampling (temperature is used only when on)</label>
+                                            </div>
+                                        </div>
+                                </div>
+
+                                <div class="api-section">
+                                    <h6>
+                                        <span class="status-indicator {{ 'status-ok' if config.get('use_xai','false') in ['true','on'] else 'status-warn' }}"></span>
+                                        xAI (Fallback)
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="use_xai" id="use_xai" {{ 'checked' if config.get('use_xai','false') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="use_xai">Enable xAI fallback</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9 text-muted">
+                                            Called only when Hugging Face raises an error.
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">xAI API Key</label>
+                                            <input type="password" class="form-control" name="xai_key" value="{{ config.get('xai_key','') }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Model</label>
+                                            <input type="text" class="form-control" name="xai_model" value="{{ config.get('xai_model','grok-code-fast-1') }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="api-section">
+                                    <h6>
+                                        <span class="status-indicator {{ 'status-ok' if config.get('use_gemini','false') in ['true','on'] else 'status-warn' }}"></span>
+                                        Google Gemini (Fallback)
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="use_gemini" id="use_gemini" {{ 'checked' if config.get('use_gemini','false') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="use_gemini">Enable Gemini fallback</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9 text-muted">
+                                            Used when Hugging Face (and xAI, if enabled) fail.
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">Gemini API Key</label>
+                                            <input type="password" class="form-control" name="gemini_key" value="{{ config.get('gemini_key','') }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="api-section">
+                                    <h6>
+                                        <span class="status-indicator {{ 'status-ok' if config.get('cf_zone_id') and config.get('cf_api_token') else 'status-warn' }}"></span>
+                                        Cloudflare Cache
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Zone ID</label>
+                                            <input type="text" class="form-control" name="cf_zone_id" value="{{ config.get('cf_zone_id','') }}">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">API Token</label>
+                                            <input type="password" class="form-control" name="cf_api_token" value="{{ config.get('cf_api_token','') }}">
+                                            <div class="form-text">Token requires the Zone.Cache Purge permission.</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-3">
+                                    <button type="submit" class="btn btn-primary">Save Engine Settings</button>
+                                    <form action="/admin/clear-cache/" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-secondary">Clear Paraphrase Cache</button>
+                                    </form>
+                                </div>
+                            </form>
+
+                            <div class="api-section mt-4">
+                                <h6>Manual CDN Purge</h6>
+                                <form action="/admin/purge/" method="post" class="row g-3 align-items-end">
+                                    <div class="col-md-8">
+                                        <label class="form-label">URL or Path</label>
+                                        <input type="text" class="form-control" name="purge_url" placeholder="/path or https://cloned.site/article">
+                                        <div class="form-text">Use a relative path on the cloned site or a full URL.</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-outline-primary w-100">Purge CDN &amp; Local Cache</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="replacement" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header"><h5 class="mb-0">Text Replacements</h5></div>
+                        <div class="card-body">
+                            <form action="/admin/replacements/" method="post" class="row g-3 align-items-end">
+                                <div class="col-md-5">
+                                    <label class="form-label">Find (plain text)</label>
+                                    <input type="text" class="form-control" name="find" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Replace With</label>
+                                    <input type="text" class="form-control" name="replace" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                                </div>
+                            </form>
+
+                            <hr class="my-4">
+
+                            {% if replacements %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Find</th>
+                                        <th scope="col">Replace</th>
+                                        <th scope="col" class="text-end">Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for replacement in replacements %}
+                                    <tr>
+                                        <td><code>{{ replacement.find }}</code></td>
+                                        <td><code>{{ replacement.replace }}</code></td>
+                                        <td class="text-end">
+                                            <form action="/admin/delete-replacement/" method="post" class="d-inline">
+                                                <input type="hidden" name="id" value="{{ replacement.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this replacement?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-info">No replacements configured yet.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const activeTab = params.get('tab');
+    if (activeTab) {
+        const trigger = document.getElementById(`${activeTab}-tab`);
+        if (trigger) {
+            new bootstrap.Tab(trigger).show();
+        }
+    }
+</script>
+</body>
+</html>
