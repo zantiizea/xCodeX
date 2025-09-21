@@ -108,7 +108,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="use_background_paraphrase" id="use_background_paraphrase" {{ 'checked' if config.get('use_background_paraphrase','true') in ['true','on'] else '' }}>
+                                                <input class="form-check-input" type="checkbox" name="use_background_paraphrase" id="use_background_paraphrase" {{ 'checked' if config.get('use_background_paraphrase', 'false') in ['true','on','1','yes'] else '' }}>
                                                 <label class="form-check-label" for="use_background_paraphrase">Use background paraphrasing (serve original instantly, regenerate in background)</label>
                                             </div>
                                         </div>
