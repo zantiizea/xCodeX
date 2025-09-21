@@ -1028,7 +1028,8 @@ async def update_api_config(
     hf_remote_url: str = Form(""),
     hf_remote_timeout: str = Form("45"),
     use_background_paraphrase: str = Form("true"),
-    use_huggingface_local: str = Form("false"),
+    use_huggingface_local: str | None = Form(None),
+    use_huggingface: str | None = Form(None),
     hf_model_id: str = Form("humarin/chatgpt_paraphraser_on_T5_base"),
     hf_task: str = Form("text2text-generation"),
     hf_device: str = Form("cpu"),
@@ -1061,7 +1062,13 @@ async def update_api_config(
     save_config(c, "hf_remote_timeout", remote_timeout)
 
     save_config(c, "use_background_paraphrase", "true" if use_background_paraphrase in {"on", "true"} else "false")
-    save_config(c, "use_huggingface_local", "true" if use_huggingface_local in {"on", "true"} else "false")
+
+    hf_local_form_value = use_huggingface_local if use_huggingface_local is not None else use_huggingface
+    save_config(
+        c,
+        "use_huggingface_local",
+        "true" if (hf_local_form_value or "").lower() in {"on", "true", "1", "yes"} else "false",
+    )
     save_config(c, "hf_model_id", hf_model_id.strip())
     save_config(c, "hf_task", hf_task.strip() or "text2text-generation")
     save_config(c, "hf_device", hf_device.strip() or "cpu")

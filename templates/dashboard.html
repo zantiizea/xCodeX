@@ -156,14 +156,14 @@
 
                                 <div class="api-section">
                                     <h6>
-                                        <span class="status-indicator {{ 'status-ok' if config.get('use_huggingface','true') in ['true','on'] else 'status-warn' }}"></span>
+                                        <span class="status-indicator {{ 'status-ok' if config.get('use_huggingface_local','true') in ['true','on'] else 'status-warn' }}"></span>
                                         Hugging Face (Primary Engine)
                                     </h6>
                                     <div class="row g-3">
                                         <div class="col-md-3">
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" name="use_huggingface" id="use_huggingface" {{ 'checked' if config.get('use_huggingface','true') in ['true','on'] else '' }}>
-                                                <label class="form-check-label" for="use_huggingface">Enable Hugging Face</label>
+                                                <input class="form-check-input" type="checkbox" name="use_huggingface_local" id="use_huggingface_local" {{ 'checked' if config.get('use_huggingface_local','true') in ['true','on'] else '' }}>
+                                                <label class="form-check-label" for="use_huggingface_local">Enable Hugging Face</label>
                                             </div>
                                         </div>
                                         <div class="col-md-9 text-muted">
