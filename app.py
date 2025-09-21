@@ -7,6 +7,7 @@ import re
 import sqlite3
 import json
 import gzip
+import shutil
 from pathlib import Path
 from urllib.parse import quote_plus, urlsplit
 import time
@@ -176,6 +177,21 @@ def set_cached_paraphrase(cache_key: str, paraphrased: str) -> None:
     cache_file = os.path.join(CACHE_DIR, f"{cache_key}.txt")
     with open(cache_file, "w", encoding="utf-8") as file:
         file.write(paraphrased)
+
+
+def clear_directory(directory: str) -> None:
+    base = Path(directory)
+    if not base.exists() or not base.is_dir():
+        return
+
+    for entry in base.iterdir():
+        try:
+            if entry.is_dir():
+                shutil.rmtree(entry)
+            else:
+                entry.unlink()
+        except Exception as exc:
+            logger.warning("Unable to delete %s: %s", entry, exc)
 
 
 # ------------------------------------------------------------------------------
@@ -486,7 +502,7 @@ def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
         paraphrase_year_threshold=as_int(config_map.get("paraphrase_year_threshold"), default=2025),
         paraphrase_month_threshold=as_int(config_map.get("paraphrase_month_threshold"), default=1),
         paraphrase_day_threshold=as_int(config_map.get("paraphrase_day_threshold"), default=1),
-        use_background_paraphrase=as_bool(config_map.get("use_background_paraphrase"), default=True),
+        use_background_paraphrase=as_bool(config_map.get("use_background_paraphrase"), default=False),
     )
 
 
@@ -1031,7 +1047,7 @@ async def update_config(
 async def update_api_config(
     hf_remote_url: str = Form(""),
     hf_remote_timeout: str = Form("45"),
-    use_background_paraphrase: str = Form("true"),
+    use_background_paraphrase: str | None = Form(None),
     use_huggingface_local: str | None = Form(None),
     use_huggingface: str | None = Form(None),
     hf_model_id: str = Form("humarin/chatgpt_paraphraser_on_T5_base"),
@@ -1065,7 +1081,10 @@ async def update_api_config(
     save_config(c, "hf_remote_url", remote_url)
     save_config(c, "hf_remote_timeout", remote_timeout)
 
-    save_config(c, "use_background_paraphrase", "true" if use_background_paraphrase in {"on", "true"} else "false")
+    background_enabled = (use_background_paraphrase or "").strip().lower() in {"on", "true", "1", "yes"}
+    save_config(c, "use_background_paraphrase", "true" if background_enabled else "false")
+    if not background_enabled:
+        clear_directory(PAGE_CACHE_DIR)
 
     hf_local_form_value = use_huggingface_local if use_huggingface_local is not None else use_huggingface
     save_config(
