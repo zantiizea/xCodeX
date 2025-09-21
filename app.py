@@ -448,7 +448,11 @@ def paraphrase_with_xai(text: str, api_key: str, model: str) -> str:
 # ------------------------------------------------------------------------------
 
 def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
-    remote_url = config_map.get("hf_remote_url", REMOTE_PARAPHRASE_DEFAULT).strip()
+    remote_url_raw = config_map.get("hf_remote_url")
+    if remote_url_raw is None:
+        remote_url = REMOTE_PARAPHRASE_DEFAULT
+    else:
+        remote_url = remote_url_raw.strip()
     requested_timeout = as_float(config_map.get("hf_remote_timeout"), default=45.0)
     remote_timeout = max(5.0, min(120.0, requested_timeout))
     if remote_timeout != requested_timeout:
@@ -1055,7 +1059,7 @@ async def update_api_config(
     conn = get_db()
     c = conn.cursor()
 
-    remote_url = hf_remote_url.strip() or REMOTE_PARAPHRASE_DEFAULT
+    remote_url = hf_remote_url.strip()
     remote_timeout = hf_remote_timeout.strip() or "45"
 
     save_config(c, "hf_remote_url", remote_url)
