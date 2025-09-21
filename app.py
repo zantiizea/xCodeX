@@ -159,6 +159,12 @@ def as_float(value: str | None, default: float) -> float:
         return default
 
 
+def parse_gemini_keys(value: str | None) -> List[str]:
+    if not value:
+        return []
+    return [line.strip() for line in value.splitlines() if line.strip()]
+
+
 def build_cache_key(text: str, engine_id: str, variant: str = "") -> str:
     base_hash = hashlib.md5(text.encode("utf-8")).hexdigest()
     variant_hash = hashlib.md5(f"{engine_id}:{variant}".encode("utf-8")).hexdigest()
@@ -312,7 +318,7 @@ class EngineConfig:
     xai_key: str
     xai_model: str
     use_gemini: bool
-    gemini_key: str
+    gemini_keys: List[str]
     cf_zone_id: str
     cf_api_token: str
     date_selector: str
@@ -478,6 +484,8 @@ def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
             remote_timeout,
         )
 
+    gemini_key_raw = config_map.get("gemini_key", "")
+
     return EngineConfig(
         remote_url=remote_url,
         remote_timeout=remote_timeout,
@@ -494,7 +502,7 @@ def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
         xai_key=config_map.get("xai_key", ""),
         xai_model=config_map.get("xai_model", "grok-code-fast-1"),
         use_gemini=as_bool(config_map.get("use_gemini"), default=False),
-        gemini_key=config_map.get("gemini_key", ""),
+        gemini_keys=parse_gemini_keys(gemini_key_raw),
         cf_zone_id=config_map.get("cf_zone_id", ""),
         cf_api_token=config_map.get("cf_api_token", ""),
         date_selector=config_map.get("date_selector", "").strip(),
@@ -530,12 +538,16 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
             logger.exception("xAI paraphrasing failed: %s", exc)
             errors.append(f"xAI: {exc}")
 
-    if config.use_gemini and config.gemini_key:
-        try:
-            return paraphrase_with_gemini(text, config.gemini_key)
-        except Exception as exc:
-            logger.exception("Gemini paraphrasing failed: %s", exc)
-            errors.append(f"Gemini: {exc}")
+    if config.use_gemini:
+        if not config.gemini_keys:
+            errors.append("Gemini: no API keys configured")
+        else:
+            for idx, api_key in enumerate(config.gemini_keys, start=1):
+                try:
+                    return paraphrase_with_gemini(text, api_key)
+                except Exception as exc:
+                    logger.exception("Gemini paraphrasing failed with key %d: %s", idx, exc)
+                    errors.append(f"Gemini[{idx}]: {exc}")
 
     if errors:
         logger.warning("All paraphrasing engines failed; returning original text. Reasons: %s", "; ".join(errors))
