@@ -127,7 +127,7 @@ def on_startup() -> None:
 
 
 def save_config(cursor: sqlite3.Cursor, key: str, value: str, site_id: int = 1) -> None:
-    cursor.execute("DELETE FROM configs WHERE key = ?", (key,))
+    cursor.execute("DELETE FROM configs WHERE site_id = ? AND key = ?", (site_id, key))
     cursor.execute(
         "INSERT INTO configs (site_id, key, value) VALUES (?, ?, ?)",
         (site_id, key, value),
@@ -1119,7 +1119,7 @@ async def update_replacement(
 async def delete_replacement(id: str = Form(...), user: str = Depends(verify_user)) -> RedirectResponse:
     conn = get_db()
     c = conn.cursor()
-    c.execute("DELETE FROM configs WHERE key = ?", (id,))
+    c.execute("DELETE FROM configs WHERE site_id = 1 AND key = ?", (id,))
     conn.commit()
     conn.close()
     return RedirectResponse("/admin/?tab=replacement", status_code=status.HTTP_303_SEE_OTHER)
