@@ -249,8 +249,9 @@
                                             Used when Hugging Face (and xAI, if enabled) fail.
                                         </div>
                                         <div class="col-md-12">
-                                            <label class="form-label">Gemini API Key</label>
-                                            <input type="password" class="form-control" name="gemini_key" value="{{ config.get('gemini_key','') }}">
+                                            <label class="form-label">Gemini API Keys</label>
+                                            <textarea class="form-control" name="gemini_key" rows="4" placeholder="key-1\nkey-2" spellcheck="false">{{ config.get('gemini_key','') }}</textarea>
+                                            <div class="form-text">Enter one key per line. The proxy will try each key in order until a call succeeds.</div>
                                         </div>
                                     </div>
                                 </div>
