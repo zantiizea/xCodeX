@@ -231,6 +231,67 @@ def verify_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
 HF_PIPELINES: Dict[tuple[str, str, str], object] = {}
 
 
+GEMINI_COOLDOWN_UNTIL: Dict[str, float] = {}
+GEMINI_DEFAULT_COOLDOWN_SECONDS = 5.0
+GEMINI_MIN_COOLDOWN_SECONDS = 1.0
+GEMINI_MAX_COOLDOWN_SECONDS = 120.0
+GEMINI_RETRY_DELAY_PATTERN = re.compile(r"retry in ([0-9.]+)s", re.IGNORECASE)
+
+
+def extract_retry_delay_seconds(exc: Exception) -> float | None:
+    retry_delay = getattr(exc, "retry_delay", None)
+    if retry_delay:
+        seconds = getattr(retry_delay, "seconds", None)
+        nanos = getattr(retry_delay, "nanos", None)
+        try:
+            if seconds is None and isinstance(retry_delay, (int, float)):
+                seconds = float(retry_delay)
+                nanos = 0
+            if seconds is not None:
+                total = float(seconds)
+                if nanos:
+                    total += float(nanos) / 1_000_000_000
+                if total > 0:
+                    return total
+        except (TypeError, ValueError):
+            pass
+
+    retry_info = getattr(exc, "retry_info", None)
+    if retry_info is not None:
+        delay = getattr(retry_info, "retry_delay", None)
+        if delay is not None:
+            seconds = getattr(delay, "seconds", 0)
+            nanos = getattr(delay, "nanos", 0)
+            total = float(seconds) + float(nanos) / 1_000_000_000
+            if total > 0:
+                return total
+
+    match = GEMINI_RETRY_DELAY_PATTERN.search(str(exc))
+    if match:
+        try:
+            parsed = float(match.group(1))
+            if parsed > 0:
+                return parsed
+        except ValueError:
+            pass
+
+    return None
+
+
+def is_rate_limit_error(exc: Exception) -> bool:
+    name = exc.__class__.__name__.lower()
+    message = str(exc).lower()
+    return "429" in message or "rate limit" in message or "resourceexhausted" in name or "quota" in message
+
+
+def compute_cooldown_seconds(exc: Exception) -> float:
+    extracted = extract_retry_delay_seconds(exc)
+    if extracted is None or extracted <= 0:
+        extracted = GEMINI_DEFAULT_COOLDOWN_SECONDS
+    clamped = max(GEMINI_MIN_COOLDOWN_SECONDS, min(GEMINI_MAX_COOLDOWN_SECONDS, extracted))
+    return clamped
+
+
 def resolve_device(device: str) -> tuple[int | None, dict]:
     device = (device or "cpu").strip().lower()
     if device.startswith("cuda"):
@@ -542,12 +603,36 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
         if not config.gemini_keys:
             errors.append("Gemini: no API keys configured")
         else:
+            now = time.time()
             for idx, api_key in enumerate(config.gemini_keys, start=1):
+                cooldown_until = GEMINI_COOLDOWN_UNTIL.get(api_key)
+                if cooldown_until is not None and cooldown_until <= now:
+                    GEMINI_COOLDOWN_UNTIL.pop(api_key, None)
+                    cooldown_until = None
+
+                if cooldown_until is not None and cooldown_until > now:
+                    remaining = max(0.0, cooldown_until - now)
+                    logger.info(
+                        "Skipping Gemini key %d because it is cooling down for another %.2fs",
+                        idx,
+                        remaining,
+                    )
+                    errors.append(f"Gemini[{idx}]: cooling down ({remaining:.1f}s remaining)")
+                    continue
+
                 try:
-                    return paraphrase_with_gemini(text, api_key)
+                    result = paraphrase_with_gemini(text, api_key)
+                    GEMINI_COOLDOWN_UNTIL.pop(api_key, None)
+                    return result
                 except Exception as exc:
                     logger.exception("Gemini paraphrasing failed with key %d: %s", idx, exc)
                     errors.append(f"Gemini[{idx}]: {exc}")
+                    if is_rate_limit_error(exc):
+                        cooldown_seconds = compute_cooldown_seconds(exc)
+                        GEMINI_COOLDOWN_UNTIL[api_key] = time.time() + cooldown_seconds
+                        logger.info(
+                            "Placing Gemini key %d on cooldown for %.2fs after rate limit", idx, cooldown_seconds
+                        )
 
     if errors:
         logger.warning("All paraphrasing engines failed; returning original text. Reasons: %s", "; ".join(errors))
