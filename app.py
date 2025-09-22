@@ -601,16 +601,47 @@ def paraphrase_element(element, config: EngineConfig) -> None:
                 break
             prev_sibling = prev_sibling.previous_sibling
 
-        if prev_last_char in ".!?" and paraphrased_core:
+        if paraphrased_core:
+            first_alpha_index = None
             for idx, ch in enumerate(paraphrased_core):
                 if ch.isalpha():
-                    if ch.islower():
-                        paraphrased_core = (
-                            paraphrased_core[:idx]
-                            + ch.upper()
-                            + paraphrased_core[idx + 1 :]
-                        )
+                    first_alpha_index = idx
                     break
+
+            if first_alpha_index is not None and prev_last_char:
+                first_alpha_char = paraphrased_core[first_alpha_index]
+                continuation_chars = {
+                    ",",
+                    ";",
+                    ":",
+                    "'",
+                    '"',
+                    "”",
+                    "’",
+                    "›",
+                    "»",
+                    ")",
+                    "]",
+                    "}",
+                }
+
+                if prev_last_char in ".!?":
+                    target_char = first_alpha_char.upper()
+                elif (
+                    prev_last_char.isalpha()
+                    or prev_last_char.isdigit()
+                    or prev_last_char in continuation_chars
+                ):
+                    target_char = first_alpha_char.lower()
+                else:
+                    target_char = first_alpha_char
+
+                if target_char != first_alpha_char:
+                    paraphrased_core = (
+                        paraphrased_core[:first_alpha_index]
+                        + target_char
+                        + paraphrased_core[first_alpha_index + 1 :]
+                    )
 
         replacement_text = f"{leading_ws}{paraphrased_core}{trailing_ws}"
         if (
