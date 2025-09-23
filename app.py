@@ -13,7 +13,7 @@ from urllib.parse import quote_plus, urlsplit
 import time
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Dict, Iterator, List, Set
+from typing import Dict, Iterator, List, Set, Tuple
 
 import requests
 from bs4 import BeautifulSoup, NavigableString
@@ -57,6 +57,13 @@ ARTICLE_SELECTORS = [
 
 
 REMOTE_PARAPHRASE_DEFAULT = "http://154.53.41.163:8000/paraphrase"
+
+
+GEMINI_KEY_COOLDOWNS: Dict[str, float] = {}
+GEMINI_KEY_BACKOFF: Dict[str, float] = {}
+GEMINI_MIN_COOLDOWN = 1.0
+GEMINI_MAX_COOLDOWN = 60.0
+GEMINI_MAX_WAIT_FOR_AVAILABLE = 5.0
 
 
 # ------------------------------------------------------------------------------
@@ -183,6 +190,81 @@ def set_cached_paraphrase(cache_key: str, paraphrased: str) -> None:
     cache_file = os.path.join(CACHE_DIR, f"{cache_key}.txt")
     with open(cache_file, "w", encoding="utf-8") as file:
         file.write(paraphrased)
+
+
+def _extract_retry_delay_seconds(exc: Exception) -> float | None:
+    retry_delay = getattr(exc, "retry_delay", None)
+    if retry_delay is not None:
+        try:
+            if hasattr(retry_delay, "total_seconds"):
+                seconds = float(retry_delay.total_seconds())
+            else:
+                seconds = float(retry_delay)
+            if seconds > 0:
+                return seconds
+        except Exception:
+            pass
+
+    retry_info = getattr(exc, "retry_info", None)
+    if retry_info is not None:
+        retry_delay = getattr(retry_info, "retry_delay", None)
+        if retry_delay is not None:
+            seconds = float(getattr(retry_delay, "seconds", 0))
+            nanos = float(getattr(retry_delay, "nanos", 0))
+            total = seconds + nanos / 1_000_000_000
+            if total > 0:
+                return total
+
+    metadata = getattr(exc, "metadata", None)
+    if isinstance(metadata, dict):
+        for header in ("retry-after", "Retry-After"):
+            if header in metadata:
+                try:
+                    return float(metadata[header])
+                except Exception:
+                    continue
+
+    message = " ".join(str(part) for part in getattr(exc, "args", ()) if part)
+    if not message:
+        message = str(exc)
+    if message:
+        match = re.search(r"retry[-\s]?after[^\d]*(\d+(?:\.\d+)?)", message, re.IGNORECASE)
+        if match:
+            try:
+                seconds = float(match.group(1))
+                if seconds > 0:
+                    return seconds
+            except Exception:
+                pass
+
+    return None
+
+
+def _classify_gemini_exception(exc: Exception) -> Tuple[bool, float | None]:
+    is_rate_limited = False
+    try:
+        from google.api_core import exceptions as google_exceptions  # type: ignore
+
+        if isinstance(exc, google_exceptions.ResourceExhausted):
+            is_rate_limited = True
+        else:
+            too_many_requests = getattr(google_exceptions, "TooManyRequests", None)
+            if too_many_requests is not None and isinstance(exc, too_many_requests):
+                is_rate_limited = True
+    except Exception:
+        pass
+
+    if not is_rate_limited:
+        code = getattr(exc, "code", None)
+        if code == 429:
+            is_rate_limited = True
+        else:
+            message = str(exc).lower()
+            if "429" in message or "rate limit" in message or "resource exhausted" in message:
+                is_rate_limited = True
+
+    retry_delay = _extract_retry_delay_seconds(exc) if is_rate_limited else None
+    return is_rate_limited, retry_delay
 
 
 def clear_directory(directory: str) -> None:
@@ -542,12 +624,64 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
         if not config.gemini_keys:
             errors.append("Gemini: no API keys configured")
         else:
-            for idx, api_key in enumerate(config.gemini_keys, start=1):
-                try:
-                    return paraphrase_with_gemini(text, api_key)
-                except Exception as exc:
-                    logger.exception("Gemini paraphrasing failed with key %d: %s", idx, exc)
-                    errors.append(f"Gemini[{idx}]: {exc}")
+            for attempt in range(2):
+                ordered_keys = sorted(
+                    enumerate(config.gemini_keys, start=1),
+                    key=lambda item: GEMINI_KEY_COOLDOWNS.get(item[1], 0.0),
+                )
+                attempted = False
+                cooldown_waits: List[float] = []
+
+                for idx, api_key in ordered_keys:
+                    cooldown_until = GEMINI_KEY_COOLDOWNS.get(api_key, 0.0)
+                    wait_remaining = cooldown_until - time.time()
+                    if wait_remaining > 0:
+                        cooldown_waits.append(wait_remaining)
+                        continue
+
+                    attempted = True
+                    GEMINI_KEY_BACKOFF.setdefault(api_key, GEMINI_MIN_COOLDOWN)
+
+                    try:
+                        result = paraphrase_with_gemini(text, api_key)
+                    except Exception as exc:
+                        is_rate_limited, retry_delay = _classify_gemini_exception(exc)
+                        if is_rate_limited:
+                            fallback_delay = GEMINI_KEY_BACKOFF.get(api_key, GEMINI_MIN_COOLDOWN)
+                            delay = max(retry_delay or 0.0, fallback_delay)
+                            delay = min(max(delay, GEMINI_MIN_COOLDOWN), GEMINI_MAX_COOLDOWN)
+                            GEMINI_KEY_COOLDOWNS[api_key] = time.time() + delay
+                            GEMINI_KEY_BACKOFF[api_key] = min(delay * 2, GEMINI_MAX_COOLDOWN)
+                            logger.warning(
+                                "Gemini key %d hit rate limit; cooling down for %.2f seconds",
+                                idx,
+                                delay,
+                            )
+                            errors.append(
+                                f"Gemini[{idx}]: rate limited (cooldown {delay:.1f}s)"
+                            )
+                        else:
+                            GEMINI_KEY_BACKOFF[api_key] = GEMINI_MIN_COOLDOWN
+                            logger.exception(
+                                "Gemini paraphrasing failed with key %d: %s", idx, exc
+                            )
+                            errors.append(f"Gemini[{idx}]: {exc}")
+                        continue
+
+                    GEMINI_KEY_COOLDOWNS.pop(api_key, None)
+                    GEMINI_KEY_BACKOFF[api_key] = GEMINI_MIN_COOLDOWN
+                    return result
+
+                if cooldown_waits and not attempted and attempt == 0:
+                    wait_for = min(max(0.0, min(cooldown_waits)), GEMINI_MAX_WAIT_FOR_AVAILABLE)
+                    if wait_for > 0:
+                        logger.info(
+                            "All Gemini keys are cooling down; waiting %.2f seconds for the earliest key",
+                            wait_for,
+                        )
+                        time.sleep(wait_for)
+                        continue
+                break
 
     if errors:
         logger.warning("All paraphrasing engines failed; returning original text. Reasons: %s", "; ".join(errors))
