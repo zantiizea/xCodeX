@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, List, Set, Tuple
 
 import requests
-from bs4 import BeautifulSoup, NavigableString, Tag
+from bs4 import BeautifulSoup, NavigableString
 from fastapi import BackgroundTasks, Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -690,127 +690,106 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
 
 
 def paraphrase_element(element, config: EngineConfig) -> None:
-    if element is None:
-        return
+    disallowed_inline = {"a", "em", "i", "strong", "b"}
 
-    protected_inline = {
-        "a",
-        "em",
-        "i",
-        "strong",
-        "b",
-        "span",
-        "u",
-    }
+    def in_disallowed_inline(node) -> bool:
+        parent = getattr(node, "parent", None)
+        while parent is not None and parent is not element:
+            name = getattr(parent, "name", "") or ""
+            if name.lower() in disallowed_inline:
+                return True
+            parent = getattr(parent, "parent", None)
+        return False
 
-    for child in list(element.children):
-        if isinstance(child, Tag):
-            paraphrase_element(child, config)
+    text_nodes: List[NavigableString] = []
+    for descendant in element.descendants:
+        if isinstance(descendant, NavigableString) and descendant.strip():
+            if in_disallowed_inline(descendant):
+                continue
+            text_nodes.append(descendant)
 
-    contents = list(element.contents)
-    if not contents:
-        return
-
-    rebuilt: List = []
-    segment_nodes: List = []
-
-    def normalize_entities(value: str) -> str:
-        return re.sub(r"&(?:amp;)?nbsp;", " ", value)
-
-    def append_nodes_from_html(html: str) -> None:
-        fragment = BeautifulSoup(html, "html.parser")
-        if fragment.body is not None:
-            nodes = list(fragment.body.contents)
-        else:
-            nodes = list(fragment.contents)
-        for node in nodes:
-            rebuilt.append(node)
-
-    def flush_segment() -> None:
-        nonlocal segment_nodes
-        if not segment_nodes:
-            return
-
-        placeholder_map: List[Tuple[str, str]] = []
-        combined_parts: List[str] = []
-        inline_counter = 0
-        text_length = 0
-        original_text_fragments: List[str] = []
-
-        for node in segment_nodes:
-            if isinstance(node, NavigableString):
-                text = str(node)
-                combined_parts.append(text)
-                text_length += len(text.strip())
-                original_text_fragments.append(text)
-            elif isinstance(node, Tag) and node.name and node.name.lower() in protected_inline:
-                placeholder = f"[[INLINE_{inline_counter}]]"
-                inline_counter += 1
-                placeholder_map.append((placeholder, str(node)))
-                combined_parts.append(placeholder)
-                original_text_fragments.append(node.get_text("", strip=False))
-
-        combined = "".join(combined_parts)
-        if not combined:
-            segment_nodes = []
-            return
-
-        leading_match = re.match(r"^\s*", combined)
-        trailing_match = re.search(r"\s*$", combined)
+    for node in text_nodes:
+        original_text = str(node)
+        stripped_text = original_text.strip()
+        if len(stripped_text) < 50:
+            continue
+        logger.info("Paraphrasing text node with %d characters", len(stripped_text))
+        paraphrased_core = (paraphrase_in_chunks(stripped_text, config, max_len=150)
+                              if len(stripped_text) > 150 else
+                              paraphrase_text(stripped_text, config) or stripped_text)
+        leading_match = re.match(r"^\s*", original_text)
+        trailing_match = re.search(r"\s*$", original_text)
         leading_ws = leading_match.group(0) if leading_match else ""
         trailing_ws = trailing_match.group(0) if trailing_match else ""
-        core = combined.strip()
 
-        should_paraphrase = text_length >= 50 and core
-        result_core = core
-
-        if should_paraphrase:
-            logger.info("Paraphrasing text segment with %d characters", text_length)
-            if len(core) > 150:
-                result_core = paraphrase_in_chunks(core, config, max_len=150) or core
+        prev_last_char = ""
+        prev_sibling = node.previous_sibling
+        while prev_sibling is not None:
+            if isinstance(prev_sibling, NavigableString):
+                prev_text = str(prev_sibling)
             else:
-                result_core = paraphrase_text(core, config) or core
+                prev_text = prev_sibling.get_text() if hasattr(prev_sibling, "get_text") else ""
+            stripped_prev = prev_text.rstrip()
+            if stripped_prev:
+                prev_last_char = stripped_prev[-1]
+                break
+            prev_sibling = prev_sibling.previous_sibling
 
-            original_text = "".join(original_text_fragments)
-            original_alpha = next((ch for ch in original_text if ch.isalpha()), None)
-            if original_alpha and result_core:
-                for idx, ch in enumerate(result_core):
-                    if ch.isalpha():
-                        if original_alpha.isupper():
-                            desired = ch.upper()
-                        elif original_alpha.islower():
-                            desired = ch.lower()
-                        else:
-                            desired = ch
-                        if desired != ch:
-                            result_core = (
-                                result_core[:idx] + desired + result_core[idx + 1 :]
-                            )
-                        break
+        if paraphrased_core:
+            first_alpha_index = None
+            for idx, ch in enumerate(paraphrased_core):
+                if ch.isalpha():
+                    first_alpha_index = idx
+                    break
 
-        for placeholder, html in placeholder_map:
-            result_core = result_core.replace(placeholder, html)
+            if first_alpha_index is not None and prev_last_char:
+                first_alpha_char = paraphrased_core[first_alpha_index]
+                continuation_chars = {
+                    ",",
+                    ";",
+                    ":",
+                    "'",
+                    '"',
+                    "”",
+                    "’",
+                    "›",
+                    "»",
+                    ")",
+                    "]",
+                    "}",
+                }
 
-        replacement_html = f"{leading_ws}{result_core}{trailing_ws}" if core else combined
-        replacement_html = normalize_entities(replacement_html)
-        append_nodes_from_html(replacement_html)
-        segment_nodes = []
+                if prev_last_char in ".!?":
+                    target_char = first_alpha_char.upper()
+                elif (
+                    prev_last_char.isalpha()
+                    or prev_last_char.isdigit()
+                    or prev_last_char in continuation_chars
+                ):
+                    target_char = first_alpha_char.lower()
+                else:
+                    target_char = first_alpha_char
 
-    for node in contents:
-        if isinstance(node, NavigableString):
-            segment_nodes.append(node)
-        elif isinstance(node, Tag) and node.name and node.name.lower() in protected_inline:
-            segment_nodes.append(node)
-        else:
-            flush_segment()
-            rebuilt.append(node)
+                if target_char != first_alpha_char:
+                    paraphrased_core = (
+                        paraphrased_core[:first_alpha_index]
+                        + target_char
+                        + paraphrased_core[first_alpha_index + 1 :]
+                    )
 
-    flush_segment()
+        replacement_text = f"{leading_ws}{paraphrased_core}{trailing_ws}"
+        if (
+            not leading_ws
+            and paraphrased_core
+            and prev_last_char
+            and (
+                (prev_last_char.isalnum() and paraphrased_core[0].isalnum())
+                or prev_last_char in ".!?"
+            )
+        ):
+            replacement_text = f" {replacement_text}"
 
-    if rebuilt:
-        element.clear()
-        for node in rebuilt:
-            element.append(node)
+        node.replace_with(replacement_text)
 
 def ensure_lazy_social_scripts(soup: BeautifulSoup) -> None:
     if soup is None:
