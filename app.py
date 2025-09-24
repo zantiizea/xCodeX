@@ -64,10 +64,6 @@ GEMINI_KEY_BACKOFF: Dict[str, float] = {}
 GEMINI_MIN_COOLDOWN = 1.0
 GEMINI_MAX_COOLDOWN = 60.0
 GEMINI_MAX_WAIT_FOR_AVAILABLE = 5.0
-GEMINI_TOTAL_RETRY_WINDOW = 30.0
-
-INLINE_PLACEHOLDER_BASE = 0xE000
-INLINE_PLACEHOLDER_MAX = 0xF8FF
 
 
 # ------------------------------------------------------------------------------
@@ -602,40 +598,33 @@ def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
 
 def paraphrase_text(text: str, config: EngineConfig) -> str:
     errors: List[str] = []
-    seen_errors: Set[str] = set()
-
-    def record_error(message: str) -> None:
-        if message not in seen_errors:
-            errors.append(message)
-            seen_errors.add(message)
 
     if config.remote_url:
         try:
             return paraphrase_with_remote(text, config.remote_url, config.remote_timeout)
         except Exception as exc:
             logger.exception("Remote paraphrasing failed: %s", exc)
-            record_error(f"Remote: {exc}")
+            errors.append(f"Remote: {exc}")
 
     if config.use_hf_local:
         try:
             return paraphrase_with_huggingface_local(text, config)
         except Exception as exc:
             logger.exception("Local Hugging Face paraphrasing failed: %s", exc)
-            record_error(f"Local HF: {exc}")
+            errors.append(f"Local HF: {exc}")
 
     if config.use_xai and config.xai_key:
         try:
             return paraphrase_with_xai(text, config.xai_key, config.xai_model or "grok-code-fast-1")
         except Exception as exc:
             logger.exception("xAI paraphrasing failed: %s", exc)
-            record_error(f"xAI: {exc}")
+            errors.append(f"xAI: {exc}")
 
     if config.use_gemini:
         if not config.gemini_keys:
-            record_error("Gemini: no API keys configured")
+            errors.append("Gemini: no API keys configured")
         else:
-            start_time = time.time()
-            while True:
+            for attempt in range(2):
                 ordered_keys = sorted(
                     enumerate(config.gemini_keys, start=1),
                     key=lambda item: GEMINI_KEY_COOLDOWNS.get(item[1], 0.0),
@@ -663,13 +652,12 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
                             delay = min(max(delay, GEMINI_MIN_COOLDOWN), GEMINI_MAX_COOLDOWN)
                             GEMINI_KEY_COOLDOWNS[api_key] = time.time() + delay
                             GEMINI_KEY_BACKOFF[api_key] = min(delay * 2, GEMINI_MAX_COOLDOWN)
-                            cooldown_waits.append(delay)
                             logger.warning(
                                 "Gemini key %d hit rate limit; cooling down for %.2f seconds",
                                 idx,
                                 delay,
-                                )
-                            record_error(
+                            )
+                            errors.append(
                                 f"Gemini[{idx}]: rate limited (cooldown {delay:.1f}s)"
                             )
                         else:
@@ -677,36 +665,23 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
                             logger.exception(
                                 "Gemini paraphrasing failed with key %d: %s", idx, exc
                             )
-                            record_error(f"Gemini[{idx}]: {exc}")
+                            errors.append(f"Gemini[{idx}]: {exc}")
                         continue
 
                     GEMINI_KEY_COOLDOWNS.pop(api_key, None)
                     GEMINI_KEY_BACKOFF[api_key] = GEMINI_MIN_COOLDOWN
                     return result
 
-                wait_for: float | None = None
-                if cooldown_waits:
-                    wait_for = min(
-                        max(0.0, min(cooldown_waits)), GEMINI_MAX_WAIT_FOR_AVAILABLE
-                    )
-
-                if wait_for is None:
-                    break
-
-                elapsed = time.time() - start_time
-                remaining = GEMINI_TOTAL_RETRY_WINDOW - elapsed
-                if remaining <= 0:
-                    break
-
-                sleep_for = min(wait_for, remaining)
-                if sleep_for <= 0:
-                    break
-
-                logger.info(
-                    "All Gemini keys are cooling down; waiting %.2f seconds for the earliest key",
-                    sleep_for,
-                )
-                time.sleep(sleep_for)
+                if cooldown_waits and not attempted and attempt == 0:
+                    wait_for = min(max(0.0, min(cooldown_waits)), GEMINI_MAX_WAIT_FOR_AVAILABLE)
+                    if wait_for > 0:
+                        logger.info(
+                            "All Gemini keys are cooling down; waiting %.2f seconds for the earliest key",
+                            wait_for,
+                        )
+                        time.sleep(wait_for)
+                        continue
+                break
 
     if errors:
         logger.warning("All paraphrasing engines failed; returning original text. Reasons: %s", "; ".join(errors))
@@ -769,17 +744,11 @@ def paraphrase_element(element, config: EngineConfig) -> None:
                 text_length += len(text.strip())
                 original_text_fragments.append(text)
             elif isinstance(node, Tag) and node.name and node.name.lower() in protected_inline:
-                codepoint = INLINE_PLACEHOLDER_BASE + inline_counter
-                if codepoint <= INLINE_PLACEHOLDER_MAX:
-                    placeholder = chr(codepoint)
-                else:
-                    placeholder = f"[[INLINE_{inline_counter}]]"
+                placeholder = f"[[INLINE_{inline_counter}]]"
                 inline_counter += 1
-                inline_text = node.get_text("", strip=False)
                 placeholder_map.append((placeholder, str(node)))
                 combined_parts.append(placeholder)
-                text_length += len(inline_text.strip())
-                original_text_fragments.append(inline_text)
+                original_text_fragments.append(node.get_text("", strip=False))
 
         combined = "".join(combined_parts)
         if not combined:
