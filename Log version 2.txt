@@ -1,0 +1,475 @@
+root@vmi2771662:/home/thebestwargames/htdocs/thebestwargames.com# sudo journalctl -u gunicorn -n 50 --follow
+Sep 25 11:22:20 vmi2771662 gunicorn[1181170]: INFO:app:Generated cache path author/willstrickland
+Sep 25 11:22:22 vmi2771662 gunicorn[1181170]: INFO:app:Skipping paraphrase for author/willstrickland?: publication date 2019-10-07 below threshold 2025-09-23
+Sep 25 11:22:23 vmi2771662 gunicorn[1181170]: 172.70.214.136:0 - "GET /author/willstrickland HTTP/1.1" 200
+Sep 25 11:22:32 vmi2771662 systemd[1]: Stopping Clone Proxy ASGI service...
+Sep 25 11:22:32 vmi2771662 gunicorn[1181148]: [2025-09-25 11:22:32 +0200] [1181148] [INFO] Handling signal: term
+Sep 25 11:22:32 vmi2771662 gunicorn[1181170]: [2025-09-25 11:22:32 +0200] [1181170] [INFO] Shutting down
+Sep 25 11:22:32 vmi2771662 gunicorn[1181170]: [2025-09-25 11:22:32 +0200] [1181170] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+Sep 25 11:22:32 vmi2771662 gunicorn[1181171]: [2025-09-25 11:22:32 +0200] [1181171] [INFO] Shutting down
+Sep 25 11:22:32 vmi2771662 gunicorn[1181171]: [2025-09-25 11:22:32 +0200] [1181171] [INFO] Error while closing socket [Errno 9] Bad file descriptor
+Sep 25 11:22:32 vmi2771662 gunicorn[1181171]: [2025-09-25 11:22:32 +0200] [1181171] [INFO] Waiting for application shutdown.
+Sep 25 11:22:32 vmi2771662 gunicorn[1181171]: [2025-09-25 11:22:32 +0200] [1181171] [INFO] Application shutdown complete.
+Sep 25 11:22:32 vmi2771662 gunicorn[1181171]: [2025-09-25 11:22:32 +0200] [1181171] [INFO] Finished server process [1181171]
+Sep 25 11:22:32 vmi2771662 gunicorn[1181170]: [2025-09-25 11:22:32 +0200] [1181170] [INFO] Waiting for application shutdown.
+Sep 25 11:22:32 vmi2771662 gunicorn[1181170]: [2025-09-25 11:22:32 +0200] [1181170] [INFO] Application shutdown complete.
+Sep 25 11:22:32 vmi2771662 gunicorn[1181170]: [2025-09-25 11:22:32 +0200] [1181170] [INFO] Finished server process [1181170]
+Sep 25 11:22:32 vmi2771662 gunicorn[1181148]: [2025-09-25 11:22:32 +0200] [1181148] [ERROR] Worker (pid:1181170) was sent SIGTERM!
+Sep 25 11:22:32 vmi2771662 gunicorn[1181148]: [2025-09-25 11:22:32 +0200] [1181148] [ERROR] Worker (pid:1181171) was sent SIGTERM!
+Sep 25 11:22:32 vmi2771662 gunicorn[1181148]: [2025-09-25 11:22:32 +0200] [1181148] [INFO] Shutting down: Master
+Sep 25 11:22:32 vmi2771662 systemd[1]: gunicorn.service: Deactivated successfully.
+Sep 25 11:22:32 vmi2771662 systemd[1]: Stopped Clone Proxy ASGI service.
+Sep 25 11:22:32 vmi2771662 systemd[1]: gunicorn.service: Consumed 33.824s CPU time.
+Sep 25 11:22:32 vmi2771662 systemd[1]: Started Clone Proxy ASGI service.
+Sep 25 11:22:33 vmi2771662 gunicorn[1181764]: [2025-09-25 11:22:33 +0200] [1181764] [INFO] Starting gunicorn 23.0.0
+Sep 25 11:22:33 vmi2771662 gunicorn[1181764]: [2025-09-25 11:22:33 +0200] [1181764] [INFO] Listening at: http://127.0.0.1:8000 (1181764)
+Sep 25 11:22:33 vmi2771662 gunicorn[1181764]: [2025-09-25 11:22:33 +0200] [1181764] [INFO] Using worker: uvicorn.workers.UvicornWorker
+Sep 25 11:22:33 vmi2771662 gunicorn[1181776]: [2025-09-25 11:22:33 +0200] [1181776] [INFO] Booting worker with pid: 1181776
+Sep 25 11:22:33 vmi2771662 gunicorn[1181778]: [2025-09-25 11:22:33 +0200] [1181778] [INFO] Booting worker with pid: 1181778
+Sep 25 11:22:44 vmi2771662 gunicorn[1181776]: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Sep 25 11:22:44 vmi2771662 gunicorn[1181778]: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Sep 25 11:22:48 vmi2771662 gunicorn[1181778]: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Sep 25 11:22:48 vmi2771662 gunicorn[1181776]: None of PyTorch, TensorFlow >= 2.0, or Flax have been found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Sep 25 11:22:49 vmi2771662 gunicorn[1181778]: [2025-09-25 11:22:49 +0200] [1181778] [INFO] Started server process [1181778]
+Sep 25 11:22:49 vmi2771662 gunicorn[1181778]: [2025-09-25 11:22:49 +0200] [1181778] [INFO] Waiting for application startup.
+Sep 25 11:22:49 vmi2771662 gunicorn[1181778]: [2025-09-25 11:22:49 +0200] [1181778] [INFO] Application startup complete.
+Sep 25 11:22:49 vmi2771662 gunicorn[1181778]: INFO:app:Generated cache path valorant/news/riot-to-seal-new-vct-emea-partner
+Sep 25 11:22:50 vmi2771662 gunicorn[1181776]: [2025-09-25 11:22:50 +0200] [1181776] [INFO] Started server process [1181776]
+Sep 25 11:22:50 vmi2771662 gunicorn[1181776]: [2025-09-25 11:22:50 +0200] [1181776] [INFO] Waiting for application startup.
+Sep 25 11:22:50 vmi2771662 gunicorn[1181776]: [2025-09-25 11:22:50 +0200] [1181776] [INFO] Application startup complete.
+Sep 25 11:22:51 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing enabled for valorant/news/riot-to-seal-new-vct-emea-partner? (date=2025-09-23 >= threshold=2025-09-23)
+Sep 25 11:22:52 vmi2771662 gunicorn[1181778]: 162.158.211.4:0 - "GET /valorant/news/riot-to-seal-new-vct-emea-partner HTTP/1.1" 200
+Sep 25 11:22:53 vmi2771662 gunicorn[1181778]: INFO:app:Found 12 elements for selector 'article'
+Sep 25 11:22:53 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 61 characters
+Sep 25 11:22:58 vmi2771662 gunicorn[1181778]: WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+Sep 25 11:22:58 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792178.245366 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:01 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.90 seconds
+Sep 25 11:23:01 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 54 characters
+Sep 25 11:23:01 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792181.164098 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:04 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path pubg/news/best-pubg-settings-for-console
+Sep 25 11:23:06 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for pubg/news/best-pubg-settings-for-console?: publication date 2020-04-28 below threshold 2025-09-23
+Sep 25 11:23:08 vmi2771662 gunicorn[1181776]: 104.23.245.13:0 - "GET /pubg/news/best-pubg-settings-for-console HTTP/1.1" 200
+Sep 25 11:23:15 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 14.57 seconds
+Sep 25 11:23:15 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 1011 characters
+Sep 25 11:23:15 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792195.738420 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:16 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path author/gavinmackenzie
+Sep 25 11:23:18 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for author/gavinmackenzie?: publication date 2025-03-10 below threshold 2025-09-23
+Sep 25 11:23:20 vmi2771662 gunicorn[1181776]: 172.70.214.136:0 - "GET /author/gavinmackenzie HTTP/1.1" 200
+Sep 25 11:23:26 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 10.40 seconds
+Sep 25 11:23:26 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792206.140715 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:32 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 6.37 seconds
+Sep 25 11:23:32 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792212.515842 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:38 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 5.85 seconds
+Sep 25 11:23:38 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792218.367649 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:47 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 9.30 seconds
+Sep 25 11:23:47 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792227.671088 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:23:56 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 8.59 seconds
+Sep 25 11:23:56 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792236.258608 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:04 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 7.88 seconds
+Sep 25 11:24:04 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792244.149616 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:11 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 7.28 seconds
+Sep 25 11:24:11 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792251.436710 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:21 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 10.00 seconds
+Sep 25 11:24:21 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 234 characters
+Sep 25 11:24:21 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792261.530847 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:24 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path baldurs-gate/news/baldurs-gate-3-cleaves-through-the-golden-joysticks-takes-record-breaking-number-of-awards
+Sep 25 11:24:28 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 7.46 seconds
+Sep 25 11:24:28 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792268.906390 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:29 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.51 seconds
+Sep 25 11:24:29 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 1493 characters
+Sep 25 11:24:29 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792269.416193 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:30 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.80 seconds
+Sep 25 11:24:30 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792270.222689 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:34 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for baldurs-gate/news/baldurs-gate-3-cleaves-through-the-golden-joysticks-takes-record-breaking-number-of-awards?: publication date 2023-11-10 below threshold 2025-09-23
+Sep 25 11:24:36 vmi2771662 gunicorn[1181776]: 172.68.70.197:0 - "GET /baldurs-gate/news/baldurs-gate-3-cleaves-through-the-golden-joysticks-takes-record-breaking-number-of-awards HTTP/1.1" 200
+Sep 25 11:24:40 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 10.00 seconds
+Sep 25 11:24:40 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792280.420342 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:41 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.01 seconds
+Sep 25 11:24:41 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792281.245514 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:42 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.99 seconds
+Sep 25 11:24:42 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792282.240236 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:55 vmi2771662 gunicorn[1181778]: INFO:app:Generated cache path codes/news/untitled-fling-game-codes
+Sep 25 11:24:57 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 14.85 seconds
+Sep 25 11:24:57 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792297.506246 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:24:58 vmi2771662 gunicorn[1181778]: INFO:app:Skipping paraphrase for codes/news/untitled-fling-game-codes?: publication date 2025-05-30 below threshold 2025-09-23
+Sep 25 11:24:59 vmi2771662 gunicorn[1181778]: 172.70.214.137:0 - "GET /codes/news/untitled-fling-game-codes HTTP/1.1" 200
+Sep 25 11:25:10 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 13.14 seconds
+Sep 25 11:25:10 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792310.649255 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:22 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 11.62 seconds
+Sep 25 11:25:22 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792322.275351 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:36 vmi2771662 gunicorn[1181778]: INFO:app:Generated cache path guides/news/pokemon-tcg-card-rarity-explained
+Sep 25 11:25:37 vmi2771662 gunicorn[1181778]: INFO:app:Skipping paraphrase for guides/news/pokemon-tcg-card-rarity-explained?: publication date 2024-10-01 below threshold 2025-09-23
+Sep 25 11:25:39 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 17.00 seconds
+Sep 25 11:25:39 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792339.281403 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:39 vmi2771662 gunicorn[1181778]: 172.71.23.63:0 - "GET /guides/news/pokemon-tcg-card-rarity-explained HTTP/1.1" 200
+Sep 25 11:25:40 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.79 seconds
+Sep 25 11:25:40 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792340.076435 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:40 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.52 seconds
+Sep 25 11:25:40 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 315 characters
+Sep 25 11:25:40 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792340.597079 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:41 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.30 seconds
+Sep 25 11:25:41 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792341.898406 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:42 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.70 seconds
+Sep 25 11:25:42 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792342.604000 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:25:55 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 12.46 seconds
+Sep 25 11:25:55 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792355.060035 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:05 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 10.31 seconds
+Sep 25 11:26:05 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792365.369892 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:13 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 8.60 seconds
+Sep 25 11:26:13 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 261 characters
+Sep 25 11:26:13 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792373.968651 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:22 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 8.49 seconds
+Sep 25 11:26:22 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792382.462649 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:33 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 11.12 seconds
+Sep 25 11:26:33 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792393.581670 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:42 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 9.10 seconds
+Sep 25 11:26:42 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 434 characters
+Sep 25 11:26:42 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792402.890484 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:50 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 6.76 seconds
+Sep 25 11:26:50 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792410.358543 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:57 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 7.26 seconds
+Sep 25 11:26:57 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792417.533349 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:58 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.50 seconds
+Sep 25 11:26:58 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 240 characters
+Sep 25 11:26:58 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792418.039461 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:26:58 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.50 seconds
+Sep 25 11:26:58 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792418.543403 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:06 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 8.39 seconds
+Sep 25 11:27:06 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 135 characters
+Sep 25 11:27:07 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792427.028958 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:07 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.72 seconds
+Sep 25 11:27:07 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 245 characters
+Sep 25 11:27:07 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792427.937056 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:14 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 6.86 seconds
+Sep 25 11:27:14 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792434.611102 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:20 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 5.58 seconds
+Sep 25 11:27:20 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 275 characters
+Sep 25 11:27:20 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792440.373559 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:20 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:27:20 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792440.978793 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:21 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.31 seconds
+Sep 25 11:27:21 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792441.285894 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:26 vmi2771662 gunicorn[1181778]: INFO:app:Generated cache path guides/news/smashdle-answers
+Sep 25 11:27:26 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 5.68 seconds
+Sep 25 11:27:26 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 233 characters
+Sep 25 11:27:27 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792447.154568 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:27 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path general/news/how-to-survive-an-antlion-attack-in-peak-megaentomology-badge
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.20 seconds
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792448.168887 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: INFO:app:Skipping paraphrase for guides/news/smashdle-answers?: publication date 2025-06-10 below threshold 2025-09-23
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.80 seconds
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 128 characters
+Sep 25 11:27:28 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792448.971948 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:29 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for general/news/how-to-survive-an-antlion-attack-in-peak-megaentomology-badge?: publication date 2025-08-12 below threshold 2025-09-23
+Sep 25 11:27:31 vmi2771662 gunicorn[1181778]: 104.23.245.13:0 - "GET /guides/news/smashdle-answers HTTP/1.1" 200
+Sep 25 11:27:31 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.42 seconds
+Sep 25 11:27:31 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 69 characters
+Sep 25 11:27:31 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792451.900921 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:31 vmi2771662 gunicorn[1181776]: 172.71.23.63:0 - "GET /general/news/how-to-survive-an-antlion-attack-in-peak-megaentomology-badge HTTP/1.1" 200
+Sep 25 11:27:32 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path genshin-impact
+Sep 25 11:27:32 vmi2771662 gunicorn[1181778]: INFO:app:Generated cache path league-of-legends/news/lol-patch-14-7-notes
+Sep 25 11:27:33 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for genshin-impact?: publication date 2025-06-06 below threshold 2025-09-23
+Sep 25 11:27:34 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 3.03 seconds
+Sep 25 11:27:34 vmi2771662 gunicorn[1181776]: 104.23.245.71:0 - "GET /genshin-impact HTTP/1.1" 200
+Sep 25 11:27:34 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path phasmophobia/news/all-maps-in-phasmophobia
+Sep 25 11:27:35 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 51 characters
+Sep 25 11:27:35 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792455.331976 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:36 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.99 seconds
+Sep 25 11:27:36 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 52 characters
+Sep 25 11:27:36 vmi2771662 gunicorn[1181778]: INFO:app:Skipping paraphrase for league-of-legends/news/lol-patch-14-7-notes?: publication date 2024-04-02 below threshold 2025-09-23
+Sep 25 11:27:36 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792456.449779 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:37 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.82 seconds
+Sep 25 11:27:37 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 87 characters
+Sep 25 11:27:37 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for phasmophobia/news/all-maps-in-phasmophobia?: publication date 2025-03-12 below threshold 2025-09-23
+Sep 25 11:27:37 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792457.959504 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:39 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.22 seconds
+Sep 25 11:27:39 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:27:39 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792459.784695 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:40 vmi2771662 gunicorn[1181776]: 104.23.245.13:0 - "GET /phasmophobia/news/all-maps-in-phasmophobia HTTP/1.1" 200
+Sep 25 11:27:40 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path fortnite/news/best-sweaty-fortnite-names-to-use
+Sep 25 11:27:40 vmi2771662 gunicorn[1181778]: 172.71.23.63:0 - "GET /league-of-legends/news/lol-patch-14-7-notes HTTP/1.1" 200
+Sep 25 11:27:41 vmi2771662 gunicorn[1181778]: WARNING:app:Gemini key 1 hit rate limit; cooling down for 1.00 seconds
+Sep 25 11:27:41 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792461.102990 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:41 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:27:41 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:27:41 vmi2771662 gunicorn[1181778]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:27:42 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:27:42 vmi2771662 gunicorn[1181778]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:27:42 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 207 characters
+Sep 25 11:27:42 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792462.016066 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:43 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.40 seconds
+Sep 25 11:27:43 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792463.418376 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:43 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for fortnite/news/best-sweaty-fortnite-names-to-use?: publication date 2025-01-09 below threshold 2025-09-23
+Sep 25 11:27:44 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:27:44 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 1390 characters
+Sep 25 11:27:44 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792464.034482 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:44 vmi2771662 gunicorn[1181776]: 108.162.237.212:0 - "GET /fortnite/news/best-sweaty-fortnite-names-to-use HTTP/1.1" 200
+Sep 25 11:27:45 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.00 seconds
+Sep 25 11:27:45 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792465.034857 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:46 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.11 seconds
+Sep 25 11:27:46 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792466.146077 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:46 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:27:46 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792466.751466 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:47 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:27:47 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792467.563501 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:48 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.51 seconds
+Sep 25 11:27:48 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792468.072494 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:48 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:27:48 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792468.782325 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:49 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:27:49 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792469.380414 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:50 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.51 seconds
+Sep 25 11:27:50 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792470.894253 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:51 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.51 seconds
+Sep 25 11:27:51 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792471.402055 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:52 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:27:52 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 2374 characters
+Sep 25 11:27:52 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792472.108939 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:52 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:27:52 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792472.916144 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:53 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:27:53 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792473.623036 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:54 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:27:54 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792474.332927 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:56 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.22 seconds
+Sep 25 11:27:56 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792476.555845 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:56 vmi2771662 gunicorn[1181778]: WARNING:app:Gemini key 2 hit rate limit; cooling down for 1.00 seconds
+Sep 25 11:27:56 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792476.756085 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:57 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:27:57 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792477.464158 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:58 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:27:58 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792478.272224 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:58 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:27:58 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792478.878295 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:27:59 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:27:59 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792479.484623 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:00 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:28:00 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792480.093942 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:00 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:28:00 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792480.708266 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:01 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.50 seconds
+Sep 25 11:28:01 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792481.211872 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:02 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.94 seconds
+Sep 25 11:28:02 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792482.155738 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:02 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.67 seconds
+Sep 25 11:28:02 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792482.830063 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:03 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:28:03 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792483.433466 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:04 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.21 seconds
+Sep 25 11:28:04 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792484.646654 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:05 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.91 seconds
+Sep 25 11:28:05 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792485.559229 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:06 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.53 seconds
+Sep 25 11:28:06 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 217 characters
+Sep 25 11:28:06 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792486.270048 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:06 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.48 seconds
+Sep 25 11:28:06 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792486.671536 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:07 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.21 seconds
+Sep 25 11:28:07 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792487.883502 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:08 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.40 seconds
+Sep 25 11:28:08 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 3910 characters
+Sep 25 11:28:08 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792488.490035 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:08 vmi2771662 gunicorn[1181778]: WARNING:app:Gemini key 3 hit rate limit; cooling down for 1.00 seconds
+Sep 25 11:28:08 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792488.795932 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:09 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path streaming/news/amouranths-net-worth-how-much-money-does-amouranth-make
+Sep 25 11:28:09 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.01 seconds
+Sep 25 11:28:09 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792489.811171 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:10 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for streaming/news/amouranths-net-worth-how-much-money-does-amouranth-make?: publication date 2024-04-19 below threshold 2025-09-23
+Sep 25 11:28:10 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.90 seconds
+Sep 25 11:28:10 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792490.713253 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:11 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.91 seconds
+Sep 25 11:28:11 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792491.620999 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:11 vmi2771662 gunicorn[1181776]: 108.162.237.212:0 - "GET /streaming/news/amouranths-net-worth-how-much-money-does-amouranth-make HTTP/1.1" 200
+Sep 25 11:28:13 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.12 seconds
+Sep 25 11:28:13 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792493.742478 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:14 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.91 seconds
+Sep 25 11:28:14 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792494.652501 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:15 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.83 seconds
+Sep 25 11:28:15 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792495.484188 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:16 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.78 seconds
+Sep 25 11:28:16 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792496.269620 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:17 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:28:17 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792497.078954 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:18 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.02 seconds
+Sep 25 11:28:18 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792498.099941 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:18 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:28:18 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792498.696321 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:19 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.11 seconds
+Sep 25 11:28:19 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792499.807898 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:20 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:28:20 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792500.514975 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:21 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.60 seconds
+Sep 25 11:28:21 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792501.121061 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:23 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.52 seconds
+Sep 25 11:28:23 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792503.646596 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:24 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:28:24 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792504.356325 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792505.162409 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: WARNING:app:Gemini key 4 hit rate limit; cooling down for 1.00 seconds
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792505.263817 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.61 seconds
+Sep 25 11:28:25 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792505.870333 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:26 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:28:26 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792506.678957 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:31 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 4.45 seconds
+Sep 25 11:28:31 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792511.125249 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:31 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path guides/news/what-are-ivs-and-evs-in-pokemon
+Sep 25 11:28:31 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.81 seconds
+Sep 25 11:28:31 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792511.933181 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:32 vmi2771662 gunicorn[1181776]: INFO:app:Skipping paraphrase for guides/news/what-are-ivs-and-evs-in-pokemon?: publication date 2025-02-15 below threshold 2025-09-23
+Sep 25 11:28:34 vmi2771662 gunicorn[1181776]: 108.162.237.212:0 - "GET /guides/news/what-are-ivs-and-evs-in-pokemon HTTP/1.1" 200
+Sep 25 11:28:35 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 3.56 seconds
+Sep 25 11:28:35 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792515.674190 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:36 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 0.99 seconds
+Sep 25 11:28:36 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792516.483329 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:37 vmi2771662 gunicorn[1181776]: INFO:app:Generated cache path valorant/news/riot-to-seal-new-vct-emea-partner
+Sep 25 11:28:38 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing enabled for valorant/news/riot-to-seal-new-vct-emea-partner? (date=2025-09-23 >= threshold=2025-09-23)
+Sep 25 11:28:39 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.83 seconds
+Sep 25 11:28:39 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792519.315201 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:40 vmi2771662 gunicorn[1181776]: 104.23.162.102:0 - "GET /valorant/news/riot-to-seal-new-vct-emea-partner HTTP/1.1" 200
+Sep 25 11:28:41 vmi2771662 gunicorn[1181776]: INFO:app:Found 12 elements for selector 'article'
+Sep 25 11:28:41 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.63 seconds
+Sep 25 11:28:41 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792521.950354 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:41 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 61 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 54 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 1011 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 234 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 1493 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 315 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 261 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 434 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 240 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 135 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 245 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 275 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 233 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 128 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 69 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 51 characters
+Sep 25 11:28:44 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 52 characters
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:45 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 3.22 seconds
+Sep 25 11:28:45 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792525.175735 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 87 characters
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792525.479657 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.79 seconds
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:28:45 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 80 characters
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 207 characters
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792526.193127 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.70 seconds
+Sep 25 11:28:46 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792526.894265 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:48 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 1.62 seconds
+Sep 25 11:28:48 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 1390 characters
+Sep 25 11:28:48 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792528.511266 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:48 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 3.44 seconds
+Sep 25 11:28:48 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792528.611737 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:50 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.02 seconds
+Sep 25 11:28:50 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 119 characters
+Sep 25 11:28:50 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792530.645479 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 3.03 seconds
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792531.541628 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: WARNING:app:Gemini key 1 hit rate limit; cooling down for 1.00 seconds
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Paraphrasing text segment with 2374 characters
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:51 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792531.747973 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:52 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.11 seconds
+Sep 25 11:28:53 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 51 characters
+Sep 25 11:28:53 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792533.357725 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:53 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 1.72 seconds
+Sep 25 11:28:53 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792533.468615 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:54 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.01 seconds
+Sep 25 11:28:54 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 1.11 seconds
+Sep 25 11:28:54 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792534.576079 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:54 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 119 characters
+Sep 25 11:28:54 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792534.584129 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:55 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.72 seconds
+Sep 25 11:28:55 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792535.485465 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:55 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 1.01 seconds
+Sep 25 11:28:55 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 127 characters
+Sep 25 11:28:55 vmi2771662 gunicorn[1181778]: E0000 00:00:1758792535.886607 1181843 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:56 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 1.09 seconds
+Sep 25 11:28:56 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792536.389468 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:56 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.50 seconds
+Sep 25 11:28:56 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792536.895463 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:58 vmi2771662 gunicorn[1181778]: INFO:app:Gemini API call took 2.12 seconds
+Sep 25 11:28:58 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 127 characters
+Sep 25 11:28:58 vmi2771662 gunicorn[1181778]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:58 vmi2771662 gunicorn[1181778]: INFO:app:Paraphrasing text segment with 127 characters
+Sep 25 11:28:58 vmi2771662 gunicorn[1181778]: INFO:app:Using cached Gemini paraphrase
+Sep 25 11:28:58 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 1.92 seconds
+Sep 25 11:28:58 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792538.817539 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:59 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.42 seconds
+Sep 25 11:28:59 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792539.238278 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:59 vmi2771662 gunicorn[1181778]: INFO:app:Cached page at page_cache/8500a2366178434bd4dc16fbb8ac85a9.html.gz
+Sep 25 11:28:59 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.59 seconds
+Sep 25 11:28:59 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792539.831325 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:28:59 vmi2771662 gunicorn[1181778]: INFO:app:Purged CDN cache for https://thebestwargames.com/valorant/news/riot-to-seal-new-vct-emea-partner
+Sep 25 11:29:00 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.71 seconds
+Sep 25 11:29:00 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792540.546026 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
+Sep 25 11:29:01 vmi2771662 gunicorn[1181776]: INFO:app:Gemini API call took 0.80 seconds
+Sep 25 11:29:07 vmi2771662 gunicorn[1181776]: E0000 00:00:1758792547.836187 1184565 alts_credentials.cc:93] ALTS creds ignored. Not running on GCP and untrusted ALTS is not enabled.
