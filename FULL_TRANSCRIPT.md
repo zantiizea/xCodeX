@@ -1,4 +1,4 @@
-I make a script python which is live clone site with paraphrase feature
+I make a script python which is live clone site with paraphrase feature. I use ubuntu vps with cloudpanel and utilizing cloudflare.
 
 #ideas by chatgpt 5 high
 Here’s a quick, practical read on your ideas, mapped to your current FastAPI clone app, plus a few high‑ROI additions you can implement with your GPT‑5 Codex High endpoint.
