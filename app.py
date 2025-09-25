@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, List, Set, Tuple
 
 import requests
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, NavigableString, Tag
 from fastapi import BackgroundTasks, Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -401,6 +401,7 @@ class EngineConfig:
     xai_model: str
     use_gemini: bool
     gemini_keys: List[str]
+    gemini_wait_for_available: float
     cf_zone_id: str
     cf_api_token: str
     date_selector: str
@@ -585,6 +586,7 @@ def build_engine_config(config_map: Dict[str, str]) -> EngineConfig:
         xai_model=config_map.get("xai_model", "grok-code-fast-1"),
         use_gemini=as_bool(config_map.get("use_gemini"), default=False),
         gemini_keys=parse_gemini_keys(gemini_key_raw),
+        gemini_wait_for_available=max(0.0, as_float(config_map.get("gemini_wait_for_available"), default=30.0)),
         cf_zone_id=config_map.get("cf_zone_id", ""),
         cf_api_token=config_map.get("cf_api_token", ""),
         date_selector=config_map.get("date_selector", "").strip(),
@@ -624,19 +626,22 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
         if not config.gemini_keys:
             errors.append("Gemini: no API keys configured")
         else:
-            for attempt in range(2):
+            total_waited = 0.0
+            wait_budget = max(0.0, config.gemini_wait_for_available)
+
+            while True:
+                remaining_budget = max(0.0, wait_budget - total_waited)
                 ordered_keys = sorted(
                     enumerate(config.gemini_keys, start=1),
                     key=lambda item: GEMINI_KEY_COOLDOWNS.get(item[1], 0.0),
                 )
                 attempted = False
-                cooldown_waits: List[float] = []
+                had_non_rate_limit_error = False
 
                 for idx, api_key in ordered_keys:
                     cooldown_until = GEMINI_KEY_COOLDOWNS.get(api_key, 0.0)
                     wait_remaining = cooldown_until - time.time()
                     if wait_remaining > 0:
-                        cooldown_waits.append(wait_remaining)
                         continue
 
                     attempted = True
@@ -660,28 +665,59 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
                             errors.append(
                                 f"Gemini[{idx}]: rate limited (cooldown {delay:.1f}s)"
                             )
+                            if remaining_budget > 0:
+                                break
+                            continue
                         else:
+                            had_non_rate_limit_error = True
                             GEMINI_KEY_BACKOFF[api_key] = GEMINI_MIN_COOLDOWN
                             logger.exception(
                                 "Gemini paraphrasing failed with key %d: %s", idx, exc
                             )
                             errors.append(f"Gemini[{idx}]: {exc}")
-                        continue
+                            continue
 
                     GEMINI_KEY_COOLDOWNS.pop(api_key, None)
                     GEMINI_KEY_BACKOFF[api_key] = GEMINI_MIN_COOLDOWN
                     return result
 
-                if cooldown_waits and not attempted and attempt == 0:
-                    wait_for = min(max(0.0, min(cooldown_waits)), GEMINI_MAX_WAIT_FOR_AVAILABLE)
-                    if wait_for > 0:
-                        logger.info(
-                            "All Gemini keys are cooling down; waiting %.2f seconds for the earliest key",
-                            wait_for,
-                        )
-                        time.sleep(wait_for)
-                        continue
-                break
+                if had_non_rate_limit_error or wait_budget <= 0:
+                    break
+
+                now = time.time()
+                wait_candidates: List[float] = []
+                for api_key in config.gemini_keys:
+                    cooldown_until = GEMINI_KEY_COOLDOWNS.get(api_key, 0.0)
+                    remaining = cooldown_until - now
+                    if remaining > 0:
+                        wait_candidates.append(remaining)
+
+                if not wait_candidates:
+                    break
+
+                remaining_budget = max(0.0, wait_budget - total_waited)
+                if remaining_budget <= 0:
+                    break
+
+                wait_for = min(min(wait_candidates), remaining_budget)
+                if wait_for <= 0:
+                    break
+
+                if not attempted:
+                    logger.info(
+                        "All Gemini keys are cooling down; waiting %.2f seconds for the earliest key",
+                        wait_for,
+                    )
+                else:
+                    logger.info(
+                        "Gemini rate limits encountered; waiting %.2f seconds before retrying",
+                        wait_for,
+                    )
+
+                time.sleep(wait_for)
+                total_waited += wait_for
+
+            # end while True
 
     if errors:
         logger.warning("All paraphrasing engines failed; returning original text. Reasons: %s", "; ".join(errors))
@@ -690,106 +726,192 @@ def paraphrase_text(text: str, config: EngineConfig) -> str:
 
 
 def paraphrase_element(element, config: EngineConfig) -> None:
-    disallowed_inline = {"a", "em", "i", "strong", "b"}
+    if element is None:
+        return
 
-    def in_disallowed_inline(node) -> bool:
-        parent = getattr(node, "parent", None)
-        while parent is not None and parent is not element:
-            name = getattr(parent, "name", "") or ""
-            if name.lower() in disallowed_inline:
-                return True
-            parent = getattr(parent, "parent", None)
-        return False
+    protected_inline = {
+        "a",
+        "em",
+        "i",
+        "strong",
+        "b",
+        "span",
+        "u",
+    }
 
-    text_nodes: List[NavigableString] = []
-    for descendant in element.descendants:
-        if isinstance(descendant, NavigableString) and descendant.strip():
-            if in_disallowed_inline(descendant):
-                continue
-            text_nodes.append(descendant)
+    for child in list(element.children):
+        if isinstance(child, Tag):
+            paraphrase_element(child, config)
 
-    for node in text_nodes:
-        original_text = str(node)
-        stripped_text = original_text.strip()
-        if len(stripped_text) < 50:
-            continue
-        logger.info("Paraphrasing text node with %d characters", len(stripped_text))
-        paraphrased_core = (paraphrase_in_chunks(stripped_text, config, max_len=150)
-                              if len(stripped_text) > 150 else
-                              paraphrase_text(stripped_text, config) or stripped_text)
-        leading_match = re.match(r"^\s*", original_text)
-        trailing_match = re.search(r"\s*$", original_text)
+    contents = list(element.contents)
+    if not contents:
+        return
+
+    rebuilt: List = []
+    segment_nodes: List = []
+
+    def normalize_entities(value: str) -> str:
+        return re.sub(r"&(?:amp;)?nbsp;", " ", value)
+
+    def append_nodes_from_html(html: str) -> None:
+        fragment = BeautifulSoup(html, "html.parser")
+        if fragment.body is not None:
+            nodes = list(fragment.body.contents)
+        else:
+            nodes = list(fragment.contents)
+        for node in nodes:
+            rebuilt.append(node)
+
+    def flush_segment() -> None:
+        nonlocal segment_nodes
+        if not segment_nodes:
+            return
+
+        placeholder_map: List[Tuple[str, str]] = []
+        combined_parts: List[str] = []
+        inline_counter = 0
+        text_length = 0
+        original_text_fragments: List[str] = []
+
+        for node in segment_nodes:
+            if isinstance(node, NavigableString):
+                text = str(node)
+                combined_parts.append(text)
+                text_length += len(text.strip())
+                original_text_fragments.append(text)
+            elif isinstance(node, Tag) and node.name and node.name.lower() in protected_inline:
+                placeholder = f"[[INLINE_{inline_counter}]]"
+                inline_counter += 1
+                placeholder_map.append((placeholder, str(node)))
+                combined_parts.append(placeholder)
+                original_text_fragments.append(node.get_text("", strip=False))
+
+        combined = "".join(combined_parts)
+        if not combined:
+            segment_nodes = []
+            return
+
+        leading_match = re.match(r"^\s*", combined)
+        trailing_match = re.search(r"\s*$", combined)
         leading_ws = leading_match.group(0) if leading_match else ""
         trailing_ws = trailing_match.group(0) if trailing_match else ""
+        core = combined.strip()
 
-        prev_last_char = ""
-        prev_sibling = node.previous_sibling
-        while prev_sibling is not None:
-            if isinstance(prev_sibling, NavigableString):
-                prev_text = str(prev_sibling)
+        should_paraphrase = text_length >= 50 and core
+        result_core = core
+
+        if should_paraphrase:
+            logger.info("Paraphrasing text segment with %d characters", text_length)
+            if len(core) > 150:
+                result_core = paraphrase_in_chunks(core, config, max_len=150) or core
             else:
-                prev_text = prev_sibling.get_text() if hasattr(prev_sibling, "get_text") else ""
-            stripped_prev = prev_text.rstrip()
-            if stripped_prev:
-                prev_last_char = stripped_prev[-1]
-                break
-            prev_sibling = prev_sibling.previous_sibling
+                result_core = paraphrase_text(core, config) or core
 
-        if paraphrased_core:
-            first_alpha_index = None
-            for idx, ch in enumerate(paraphrased_core):
-                if ch.isalpha():
-                    first_alpha_index = idx
-                    break
+            original_text = "".join(original_text_fragments)
+            original_alpha = next((ch for ch in original_text if ch.isalpha()), None)
+            if original_alpha and result_core:
+                for idx, ch in enumerate(result_core):
+                    if ch.isalpha():
+                        if original_alpha.isupper():
+                            desired = ch.upper()
+                        elif original_alpha.islower():
+                            desired = ch.lower()
+                        else:
+                            desired = ch
+                        if desired != ch:
+                            result_core = (
+                                result_core[:idx] + desired + result_core[idx + 1 :]
+                            )
+                        break
 
-            if first_alpha_index is not None and prev_last_char:
-                first_alpha_char = paraphrased_core[first_alpha_index]
-                continuation_chars = {
-                    ",",
-                    ";",
-                    ":",
-                    "'",
-                    '"',
-                    "”",
-                    "’",
-                    "›",
-                    "»",
-                    ")",
-                    "]",
-                    "}",
-                }
+        placeholder_context: Dict[str, Tuple[str, str]] = {}
+        search_start = 0
+        for placeholder, _html in placeholder_map:
+            idx = combined.find(placeholder, search_start)
+            if idx == -1:
+                continue
+            pre_ws_start = idx - 1
+            while pre_ws_start >= 0 and combined[pre_ws_start].isspace():
+                pre_ws_start -= 1
+            pre_ws = combined[pre_ws_start + 1 : idx]
+            post_index = idx + len(placeholder)
+            post_ws_end = post_index
+            while post_ws_end < len(combined) and combined[post_ws_end].isspace():
+                post_ws_end += 1
+            post_ws = combined[post_index:post_ws_end]
+            placeholder_context[placeholder] = (pre_ws, post_ws)
+            search_start = idx + len(placeholder)
 
-                if prev_last_char in ".!?":
-                    target_char = first_alpha_char.upper()
-                elif (
-                    prev_last_char.isalpha()
-                    or prev_last_char.isdigit()
-                    or prev_last_char in continuation_chars
-                ):
-                    target_char = first_alpha_char.lower()
-                else:
-                    target_char = first_alpha_char
+        for placeholder, html in placeholder_map:
+            pre_ws, post_ws = placeholder_context.get(placeholder, ("", ""))
 
-                if target_char != first_alpha_char:
-                    paraphrased_core = (
-                        paraphrased_core[:first_alpha_index]
-                        + target_char
-                        + paraphrased_core[first_alpha_index + 1 :]
-                    )
+            idx = result_core.find(placeholder)
+            while idx != -1:
+                trim_start = idx
+                while trim_start > 0 and result_core[trim_start - 1].isspace():
+                    trim_start -= 1
+                if trim_start < idx:
+                    current_ws = result_core[trim_start:idx]
+                    if pre_ws:
+                        if current_ws != pre_ws:
+                            result_core = (
+                                result_core[:trim_start]
+                                + pre_ws
+                                + result_core[idx:]
+                            )
+                            idx = trim_start + len(pre_ws)
+                            idx = result_core.find(placeholder, idx)
+                            continue
+                    else:
+                        result_core = result_core[:trim_start] + result_core[idx:]
+                        idx = trim_start
+                        idx = result_core.find(placeholder, idx)
+                        continue
 
-        replacement_text = f"{leading_ws}{paraphrased_core}{trailing_ws}"
-        if (
-            not leading_ws
-            and paraphrased_core
-            and prev_last_char
-            and (
-                (prev_last_char.isalnum() and paraphrased_core[0].isalnum())
-                or prev_last_char in ".!?"
-            )
-        ):
-            replacement_text = f" {replacement_text}"
+                end_idx = idx + len(placeholder)
+                trim_end = end_idx
+                while trim_end < len(result_core) and result_core[trim_end].isspace():
+                    trim_end += 1
+                if trim_end > end_idx:
+                    current_ws = result_core[end_idx:trim_end]
+                    if post_ws:
+                        if current_ws != post_ws:
+                            result_core = (
+                                result_core[:end_idx]
+                                + post_ws
+                                + result_core[trim_end:]
+                            )
+                            idx = result_core.find(placeholder, idx)
+                            continue
+                    else:
+                        result_core = result_core[:end_idx] + result_core[trim_end:]
+                        idx = result_core.find(placeholder, idx)
+                        continue
 
-        node.replace_with(replacement_text)
+                idx = result_core.find(placeholder, idx + len(placeholder))
+
+            result_core = result_core.replace(placeholder, html)
+
+        replacement_html = f"{leading_ws}{result_core}{trailing_ws}" if core else combined
+        replacement_html = normalize_entities(replacement_html)
+        append_nodes_from_html(replacement_html)
+        segment_nodes = []
+
+    for node in contents:
+        if isinstance(node, NavigableString):
+            segment_nodes.append(node)
+        elif isinstance(node, Tag) and node.name and node.name.lower() in protected_inline:
+            segment_nodes.append(node)
+        else:
+            flush_segment()
+            rebuilt.append(node)
+
+    flush_segment()
+
+    if rebuilt:
+        element.clear()
+        for node in rebuilt:
+            element.append(node)
 
 def ensure_lazy_social_scripts(soup: BeautifulSoup) -> None:
     if soup is None:
